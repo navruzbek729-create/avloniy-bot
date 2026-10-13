@@ -2,6 +2,7 @@ import os
 import json
 from pypdf import PdfReader
 from docx import Document
+from google import genai
 
 def extract_text_from_pdf(pdf_path: str, max_pages: int = 50) -> str:
     """PDF fayldan matnni ajratib oladi"""
@@ -31,11 +32,15 @@ def extract_text_from_docx(docx_path: str) -> str:
         print(f"Word o'qishda xatolik: {e}")
         return ""
 
-def generate_a_plus_prompt(text_content: str, test_type: str = "chapter", count: int = 30) -> str:
-    """
-    A+ darajadagi zanjirli testlar uchun qat'iy prompt tayyorlaydi.
-    test_type: 'topic' (35 ta) yoki 'chapter' (30 ta)
-    """
+def generate_questions_with_ai(text_content: str, test_type: str = "chapter", count: int = 30) -> list:
+    """Gemini AI orqali A+ darajadagi zanjirli testlar generatsiya qiladi"""
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        print("GEMINI_API_KEY topilmadi")
+        return []
+
+    client = genai.Client(api_key=api_key)
+
     prompt = f"""
 Siz — Oliy toifali ekspert, DTM va Attestatsiya bo'yicha A+ darajadagi zanjirli testlar tuzuvchi mutaxassissiz.
 Quyida berilgan darslik matniga asoslanib, jami {count} ta ENG QIYIN, A+ DARAJADAGI va ZANJIRLI test savollarini tuzing.
@@ -64,6 +69,26 @@ FORMAT: Faqat va faqat quyidagi toza JSON formatida javob qaytaring (hech qanday
 ]
 
 DARSLIK MATNI:
-{text_content[:15000]}
+{text_content[:20000]}
 """
-    return prompt
+
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+        )
+        resp_text = response.text.strip()
+        # Markdown tozalash (agar ```json bo'lsa)
+        if resp_text.startswith("```"):
+            lines = resp_text.splitlines()
+            if lines[0].startswith("```"):
+                lines = lines[1:]
+            if lines and lines[-1].startswith("```"):
+                lines = lines[:-1]
+            resp_text = "\n".join(lines).strip()
+
+        data = json.loads(resp_text)
+        return data
+    except Exception as e:
+        print(f"AI test yaratishda xatolik: {e}")
+        return []
