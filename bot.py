@@ -28,9 +28,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"Assalomu alaykum, <b>{user.first_name}</b>!\n\n"
         f"📚 <b>Avloniy Ta'lim va A+ Testlar Platformasi</b>ga xush kelibsiz.\n\n"
         f"📖 <b>Qisqacha Yo'riqnoma:</b>\n"
-        f"1️⃣ <b>O'quvchilar uchun:</b> Ilovaga kiring va <i>'Ro'yxatdan o'tish'</i> orqali ismingiz hamda guruhingizni kiriting. Tizim sizga shaxsiy login va parol beradi. Darsliklar asosidagi A+ testlarni yeching va natijalaringizni to'plang!\n\n"
-        f"2️⃣ <b>Adminlar uchun:</b> Ilova ichida <i>'Kirish'</i> tugmasini bosib, Admin logini (<code>avloniyuz</code>) va paroli (<code>avloniy</code>) bilan kiring. Barcha fanlar, bo'limlar va darsliklarni to'g'ridan-to'g'ri ilova ichidan qo'shishingiz va boshqarishingiz mumkin.\n\n"
-        f"Platformani ochish uchun quyidagi tugmani bosing 👇"
+        f"🔹 <b>O'quvchilar:</b> Ilovaga kiring va <i>'Ro'yxatdan o'tish'</i> tugmasi orqali ismingiz hamda guruhingizni kiriting. Tizim sizga shaxsiy login va parol beradi. Darsliklar asosidagi A+ testlarni yeching va bilimingizni sinang!\n\n"
+        f"🔹 <b>Adminlar:</b> Ilovadagi <i>'Kirish'</i> oynasi orqali o'z shaxsiy admin parolingiz bilan boshqaruv paneliga o'tishingiz mumkin.\n\n"
+        f"Platformaga kirish uchun quyidagi tugmani bosing 👇"
     )
 
     keyboard = [
