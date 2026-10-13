@@ -1,6 +1,8 @@
 import os
 import json
 import logging
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
 from telegram import (
     Update, 
     InlineKeyboardButton, 
@@ -274,7 +276,22 @@ async def document_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ])
     )
 
+class HealthCheckHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
+        self.wfile.write(b"Avloniy Bot is running 24/7!")
+
+def run_healthcheck_server():
+    port = int(os.environ.get("PORT", 8080))
+    server = HTTPServer(("0.0.0.0", port), HealthCheckHandler)
+    server.serve_forever()
+
 def main():
+    # Render uchun fon serveri
+    threading.Thread(target=run_healthcheck_server, daemon=True).start()
+
     BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8684781208:AAEAUHfJp0rA00TncD4fgt6eiuJo2GMRh9g")
     
     app = ApplicationBuilder().token(BOT_TOKEN).build()
@@ -283,7 +300,7 @@ def main():
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler))
     app.add_handler(MessageHandler(filters.Document.ALL, document_handler))
 
-    print("Avloniy Bot yangilangan holda ishga tushirildi...")
+    print("Avloniy Bot 24/7 rejimda ishga tushirildi...")
     app.run_polling()
 
 if __name__ == "__main__":
